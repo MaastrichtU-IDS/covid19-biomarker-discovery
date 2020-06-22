@@ -1,0 +1,65 @@
+name: Run literature annotator notebook
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  run-notebook:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+        # python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        cd literature-annotator
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    
+    - uses: yaananth/run-notebook@v1
+      env:
+        RUNNER: ${{ toJson(runner) }}
+        SECRETS: ${{ toJson(secrets) }}
+        GITHUB: ${{ toJson(github) }}
+        BIOPORTAL_APIKEY: ${{ secrets.BIOPORTAL_APIKEY }}
+      with:
+        notebook: "literature-annotator/notebooks/ConvertPub2RDF.ipynb"
+        params: "literature-annotator/ConvertPub2RDF-config.json"
+        # isReport: False
+
+    - uses: actions/upload-artifact@master
+      if: always()
+      with:
+        name: notebook-output
+        path: ${{ RUNNER.temp }}/nb-runner
+      env:
+        RUNNER: ${{ toJson(runner) }}
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: rdf-output
+        path: data/output
+    
+    - run: |
+        find . -name "*.ttl"
+        pwd 
+        ls -R
+
+    - uses: MaastrichtU-IDS/RdfUpload@master
+      with:
+        file: /github/workspace/data/output/publications.ttl
+        endpoint: https://graphdb.dumontierlab.com/repositories/test-vincent/statements
+        user: ${{ secrets.GRAPHDB_USER }}
+        password: ${{ secrets.GRAPHDB_PASSWORD }}
+        graph: "https://w3id.org/d2s/literature-annotation"

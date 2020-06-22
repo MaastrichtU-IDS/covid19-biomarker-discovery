@@ -1,0 +1,8 @@
+## Step1: download data
+wget https://dimensions.figshare.com/ndownloader/files/22797602  -O data/input/dimensions.xlsx
+
+## Step2: convert data to RDF
+
+papermill notebook/ConvertPub2RDF.ipynb -p input_data data/input/dimensions.xlsx -p output_data data/output/publications.ttl notebook/ConvertPub2RDF_output.ipynb
+
+## Step 3: upload RDF to GraphDB
