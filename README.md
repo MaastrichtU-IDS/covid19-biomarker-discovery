@@ -13,6 +13,6 @@ cd literature-annotator
 Start a JupyterLab locally from the `literature-annotator` folder:
 
 ```bash
-docker run --rm -it -p 8888:8888 -v $(pwd):/notebooks -e PASSWORD="<your_secret>" umids/jupyterlab:latest
+docker run --rm -it -p 8888:8888 -e BIOPORTAL_APIKEY=<YOUR_BIOPORTAL_APIKEY> -v $(pwd):/notebooks -e PASSWORD="<your_secret>" umids/jupyterlab:latest
 ```
 
