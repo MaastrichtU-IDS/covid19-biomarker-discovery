@@ -1,3 +1,5 @@
+![Run literature annotator notebook](https://github.com/MaastrichtU-IDS/covid19-biomarker-discovery/workflows/Run%20literature%20annotator%20notebook/badge.svg)
+
 # Covid-19 Biomarker Discovery
 
 A project about biomarker discovery for COVID-19 research. 
